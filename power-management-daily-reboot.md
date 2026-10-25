@@ -77,6 +77,9 @@ Created a systemd user service and timer:
    ```
    *Verified trigger:* Scheduled for `05:00:00 IST` every day.
 
+4. **Persistent Services Autostart Across Reboots**:
+   Because user lingering is enabled (`dex`), systemd user services start immediately upon boot. Core services (**Recipe Helper**, **Workout Helper**, and **Pi-hole**) are configured to launch automatically at boot and recover from crashes. Full service definitions and management scripts are documented in [**`autostart-persistent-services.md`**](./autostart-persistent-services.md).
+
 ---
 
 ## 3. Useful Commands & Monitoring
