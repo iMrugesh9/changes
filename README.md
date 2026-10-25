@@ -21,6 +21,7 @@ This repository maintains an organized, version-controlled record of all system 
 | Document | Category | Summary |
 | :--- | :--- | :--- |
 | [**`power-management-daily-reboot.md`**](./power-management-daily-reboot.md) | Power & Automation | Laptop 24/7 uptime setup: masked sleep/suspend/hibernate targets, MATE lid-switch handlers, user lingering, and daily 05:00 AM systemd reboot timer. |
+| [**`autostart-persistent-services.md`**](./autostart-persistent-services.md) | Services & Autostart | 24/7 autostart & crash recovery for Recipe Helper (8080), Workout Helper (8081), and Pi-hole across daily 5 AM reboots via systemd user services. |
 | [**`multi-monitor-panel-setup.md`**](./multi-monitor-panel-setup.md) | Desktop & Display | Dual-monitor configuration (`LVDS-1` + `HDMI-1`) with independent MATE panels, custom applets/launchers, and multi-monitor window management. |
 
 ---
