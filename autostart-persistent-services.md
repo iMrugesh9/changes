@@ -1,6 +1,6 @@
-# Autostart & 24/7 Persistence for Core Services (Recipe Helper, Workout Helper, Pi-hole)
+# Autostart & 24/7 Persistence for Core Services (Recipe Helper, Workout Helper, Health Tracker, Pi-hole)
 
-**Date:** 2026-10-25  
+**Date:** 2026-10-25 (Updated 2026-11-19)  
 **System:** Lenovo G500 (Linux Mint 22.3 "Xia" / MATE Desktop)  
 **Kernel:** Linux 6.14.0-37-generic  
 **User:** `dex`  
@@ -12,13 +12,13 @@
 
 The system is configured to perform an automated reboot every morning at 05:00:00 IST (see [`power-management-daily-reboot.md`](./power-management-daily-reboot.md)).
 
-Prior to this change:
-* The **Recipe Helper** server (Flask on port `8080`) and **Workout Helper** server (Flask on port `8081`) were started manually via desktop launchers or terminal scripts. When the machine rebooted at 5:00 AM, both servers stopped and remained offline until manually launched.
+Prior to this setup:
+* The **Recipe Helper** server (Flask on port `8080`), **Workout Helper** server (Flask on port `8081`), and **PulseTwo Health Tracker** server (Python on port `8000`) were started manually via desktop launchers or terminal scripts. When the machine rebooted at 5:00 AM, the servers stopped and remained offline until manually launched.
 * **Pi-hole** had a container restart policy of `unless-stopped`, meaning if stopped or interrupted during reboot, it would not guarantee recovery without manual intervention.
 
 **Goals:**
-1. Ensure **Recipe Helper**, **Workout Helper**, and **Pi-hole** automatically start upon boot/reboot before and without requiring user graphical login.
-2. Ensure all three services automatically restart if they crash or exit unexpectedly (`Restart=always`).
+1. Ensure **Recipe Helper**, **Workout Helper**, **Health Tracker**, and **Pi-hole** automatically start upon boot/reboot before and without requiring user graphical login.
+2. Ensure all services automatically restart if they crash or exit unexpectedly (`Restart=always`).
 3. Harmonize the desktop GUI scripts (`manage_server.sh`) with systemd so clicking Start/Stop/Restart in desktop menus properly controls the underlying systemd services.
 
 ---
