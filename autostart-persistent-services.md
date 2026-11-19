@@ -88,7 +88,34 @@ WantedBy=default.target
 * **Port**: `8081` (Local: `http://localhost:8081`, LAN: `http://192.168.1.9:8081`)
 * **Auto-restart**: Restarts within 5 seconds if terminated.
 
-### C. Pi-hole Service & Docker Policy
+### C. PulseTwo Health Tracker Service (`health-tracker.service`)
+
+Created systemd user unit at `/home/dex/.config/systemd/user/health-tracker.service`:
+```ini
+[Unit]
+Description=PulseTwo Health Tracker Web Server & Local API
+Documentation=file:///home/dex/projects/health-tracker/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/dex/projects/health-tracker
+ExecStart=/usr/bin/python3 /home/dex/projects/health-tracker/server.py 8000
+Restart=always
+RestartSec=5s
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
+```
+
+* **Port**: `8000` (Local: `http://localhost:8000`, LAN: `http://192.168.1.9:8000`)
+* **Auto-restart**: Restarts within 5 seconds if terminated.
+
+### D. Pi-hole Service & Docker Policy
 
 1. **Updated Docker Container Restart Policy**:
    ```bash
@@ -118,23 +145,24 @@ WantedBy=default.target
    WantedBy=default.target
    ```
 
-### D. Desktop Script Harmonization
+### E. Desktop Script Harmonization
 
-Updated the management scripts:
-* `/home/dex/projects/workout/manage_server.sh`
+Updated and created the management scripts:
 * `/home/dex/projects/personal-ai/manage_server.sh`
+* `/home/dex/projects/workout/manage_server.sh`
+* `/home/dex/projects/health-tracker/manage_server.sh`
 
-Both scripts now integrate with `systemctl --user`:
+All scripts integrate with `systemctl --user`:
 * `start`: Calls `systemctl --user start <service>` if unit exists.
 * `stop`: Calls `systemctl --user stop <service>` so systemd does not automatically restart the process when intentionally stopped.
 * `restart`: Calls `systemctl --user restart <service>`.
 * `status`: Retrieves the PID and health from systemd or process table.
 
-### E. Activation Commands
+### F. Activation Commands
 
 ```bash
 systemctl --user daemon-reload
-systemctl --user enable --now recipe-helper.service workout-helper.service pihole.service
+systemctl --user enable --now recipe-helper.service workout-helper.service health-tracker.service pihole.service
 ```
 
 ---
@@ -143,13 +171,14 @@ systemctl --user enable --now recipe-helper.service workout-helper.service pihol
 
 * **Check Service Status**:
   ```bash
-  systemctl --user status recipe-helper.service workout-helper.service pihole.service
+  systemctl --user status recipe-helper.service workout-helper.service health-tracker.service pihole.service
   ```
 
 * **Check HTTP Endpoints**:
   ```bash
   curl -sI http://127.0.0.1:8080 | head -n 1   # Recipe Helper (HTTP 200 OK)
   curl -sI http://127.0.0.1:8081 | head -n 1   # Workout Helper (HTTP 200 OK)
+  curl -sI http://127.0.0.1:8000 | head -n 1   # Health Tracker (HTTP 200 OK)
   curl -sI http://127.0.0.1:80/admin/ | head -n 1 # Pi-hole Admin (HTTP 302 Found)
   ```
 
@@ -162,6 +191,7 @@ systemctl --user enable --now recipe-helper.service workout-helper.service pihol
   ```bash
   journalctl --user -u recipe-helper.service -f
   journalctl --user -u workout-helper.service -f
+  journalctl --user -u health-tracker.service -f
   journalctl --user -u pihole.service -f
   ```
 
@@ -172,9 +202,10 @@ systemctl --user enable --now recipe-helper.service workout-helper.service pihol
 To disable automatic startup of these services on boot:
 
 ```bash
-systemctl --user disable --now recipe-helper.service workout-helper.service pihole.service
+systemctl --user disable --now recipe-helper.service workout-helper.service health-tracker.service pihole.service
 rm -f ~/.config/systemd/user/recipe-helper.service
 rm -f ~/.config/systemd/user/workout-helper.service
+rm -f ~/.config/systemd/user/health-tracker.service
 rm -f ~/.config/systemd/user/pihole.service
 systemctl --user daemon-reload
 ```
